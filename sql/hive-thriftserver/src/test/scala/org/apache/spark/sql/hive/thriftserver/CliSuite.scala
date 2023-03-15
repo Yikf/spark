@@ -30,11 +30,13 @@ import scala.concurrent.duration._
 
 import org.apache.hadoop.hive.cli.CliSessionState
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars
+import org.apache.hadoop.hive.metastore.api.{FieldSchema, Schema}
 import org.apache.hadoop.hive.ql.session.SessionState
 
 import org.apache.spark.{ErrorMessageFormat, SparkConf, SparkContext, SparkFunSuite}
 import org.apache.spark.ProcessTestUtils.ProcessOutputCapturer
 import org.apache.spark.deploy.SparkHadoopUtil
+import org.apache.spark.sql.{SparkSession, SQLContext}
 import org.apache.spark.sql.hive.HiveUtils
 import org.apache.spark.sql.hive.HiveUtils._
 import org.apache.spark.sql.hive.client.HiveClientImpl
@@ -805,5 +807,29 @@ class CliSuite extends SparkFunSuite {
         "spark_42448"),
       prompt = "spark-sql (spark_42448)>")(
       "select current_database();" -> "spark_42448")
+  }
+
+  test("SPARK-41259: SparkSQLDriver Output schema and result string should be consistent") {
+    val sparkConf = new SparkConf(loadDefaults = true)
+      .setMaster("local")
+      .setAppName("SPARK-41259")
+    val sparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
+    val sparkContext = sparkSession.sparkContext
+    val sqlContext = new SQLContext(sparkSession)
+    SparkSQLEnv.sparkContext = sparkContext
+    SparkSQLEnv.sqlContext = sqlContext
+    val driver = new SparkSQLDriver()
+
+    driver.run("show tables")
+    val stSchema = driver.getSchema
+    assert(stSchema == new Schema(Seq(new FieldSchema(
+      "tableName", "string", "")).asJava, null))
+
+    driver.run("show views")
+    val swSchema = driver.getSchema
+    assert(swSchema == new Schema(Seq(new FieldSchema(
+      "viewName", "string", "")).asJava, null))
+
+    SparkSQLEnv.stop()
   }
 }

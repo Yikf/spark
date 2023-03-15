@@ -29,8 +29,9 @@ import org.apache.hadoop.hive.ql.processors.CommandProcessorResponse
 import org.apache.spark.SparkThrowable
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.execution.{QueryExecution, SQLExecution}
-import org.apache.spark.sql.execution.HiveResult.hiveResultString
+import org.apache.spark.sql.catalyst.expressions.Attribute
+import org.apache.spark.sql.execution.HiveResult.collectHiveResult
+import org.apache.spark.sql.execution.SQLExecution
 import org.apache.spark.sql.internal.{SQLConf, VariableSubstitution}
 
 
@@ -44,13 +45,12 @@ private[hive] class SparkSQLDriver(val context: SQLContext = SparkSQLEnv.sqlCont
   override def init(): Unit = {
   }
 
-  private def getResultSetSchema(query: QueryExecution): Schema = {
-    val analyzed = query.analyzed
-    logDebug(s"Result Schema: ${analyzed.output}")
-    if (analyzed.output.isEmpty) {
+  private def getResultSetSchema(output: Seq[Attribute]): Schema = {
+    logDebug(s"Result Schema: ${output}")
+    if (output.isEmpty) {
       new Schema(Arrays.asList(new FieldSchema("Response code", "string", "")), null)
     } else {
-      val fieldSchemas = analyzed.output.map { attr =>
+      val fieldSchemas = output.map { attr =>
         new FieldSchema(attr.name, attr.dataType.catalogString, "")
       }
 
@@ -65,10 +65,12 @@ private[hive] class SparkSQLDriver(val context: SQLContext = SparkSQLEnv.sqlCont
       }
       context.sparkContext.setJobDescription(substitutorCommand)
       val execution = context.sessionState.executePlan(context.sql(command).logicalPlan)
-      hiveResponse = SQLExecution.withNewExecutionId(execution, Some("cli")) {
-        hiveResultString(execution.executedPlan)
+      val result = SQLExecution.withNewExecutionId(execution, Some("cli")) {
+        collectHiveResult(execution)
       }
-      tableSchema = getResultSetSchema(execution)
+
+      tableSchema = getResultSetSchema(result._1)
+      hiveResponse = result._2
       new CommandProcessorResponse(0)
     } catch {
         case st: SparkThrowable =>

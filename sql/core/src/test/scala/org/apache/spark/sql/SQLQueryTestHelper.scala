@@ -24,7 +24,7 @@ import org.apache.spark.ErrorMessageFormat.MINIMAL
 import org.apache.spark.SparkThrowableHelper.getMessage
 import org.apache.spark.sql.catalyst.planning.PhysicalOperation
 import org.apache.spark.sql.catalyst.plans.logical._
-import org.apache.spark.sql.execution.HiveResult.hiveResultString
+import org.apache.spark.sql.execution.HiveResult.collectHiveResult
 import org.apache.spark.sql.execution.SQLExecution
 import org.apache.spark.sql.execution.command.{DescribeColumnCommand, DescribeCommandBase}
 import org.apache.spark.sql.types.StructType
@@ -67,7 +67,7 @@ trait SQLQueryTestHelper {
     val schema = df.schema.catalogString
     // Get answer, but also get rid of the #1234 expression ids that show up in explain plans
     val answer = SQLExecution.withNewExecutionId(df.queryExecution, Some(sql)) {
-      hiveResultString(df.queryExecution.executedPlan).map(replaceNotIncludedMsg)
+      collectHiveResult(df.queryExecution)._2.map(replaceNotIncludedMsg)
     }
 
     // If the output is not pre-sorted, sort it.

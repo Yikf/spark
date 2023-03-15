@@ -592,27 +592,27 @@ class Column:
         >>> df = spark.createDataFrame([
         ...     Row(a=Row(b=1, c=2, d=3, e=Row(f=4, g=5, h=6)))])
         >>> df.withColumn('a', df['a'].dropFields('b')).show()
-        +-----------------+
-        |                a|
-        +-----------------+
-        |{2, 3, {4, 5, 6}}|
-        +-----------------+
+        +--------------------+
+        |                   a|
+        +--------------------+
+        |{"c":2, "d":3, "e...|
+        +--------------------+
 
         >>> df.withColumn('a', df['a'].dropFields('b', 'c')).show()
-        +--------------+
-        |             a|
-        +--------------+
-        |{3, {4, 5, 6}}|
-        +--------------+
+        +--------------------+
+        |                   a|
+        +--------------------+
+        |{"d":3, "e":{"f":...|
+        +--------------------+
 
         This method supports dropping multiple nested fields directly e.g.
 
         >>> df.withColumn("a", col("a").dropFields("e.g", "e.h")).show()
-        +--------------+
-        |             a|
-        +--------------+
-        |{1, 2, 3, {4}}|
-        +--------------+
+        +--------------------+
+        |                   a|
+        +--------------------+
+        |{"b":1, "c":2, "d...|
+        +--------------------+
 
         However, if you are going to add/replace multiple nested fields,
         it is preferred to extract out the nested struct before
@@ -621,11 +621,11 @@ class Column:
         >>> df.select(col("a").withField(
         ...     "e", col("a.e").dropFields("g", "h")).alias("a")
         ... ).show()
-        +--------------+
-        |             a|
-        +--------------+
-        |{1, 2, 3, {4}}|
-        +--------------+
+        +--------------------+
+        |                   a|
+        +--------------------+
+        |{"b":1, "c":2, "d...|
+        +--------------------+
 
         """
         sc = get_active_spark_context()

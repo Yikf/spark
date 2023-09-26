@@ -20,7 +20,7 @@ import java.io.{File, FileInputStream}
 import java.time.Instant
 import java.util.UUID
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 // scalastyle:off executioncontextglobal
 import scala.concurrent.ExecutionContext.Implicits.global

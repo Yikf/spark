@@ -19,7 +19,7 @@ package org.apache.spark.sql.execution.streaming.state
 
 import java.io.File
 
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters
 
 import org.scalatest.time.{Minute, Span}
 

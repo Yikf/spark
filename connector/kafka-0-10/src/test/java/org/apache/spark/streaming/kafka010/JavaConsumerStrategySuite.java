@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters;
 
 import org.apache.kafka.common.TopicPartition;
 
@@ -36,22 +36,22 @@ public class JavaConsumerStrategySuite implements Serializable {
     final Pattern pat = Pattern.compile("top.*");
     final Collection<String> topics = Arrays.asList(topic1);
     final scala.collection.Iterable<String> sTopics =
-      JavaConverters.collectionAsScalaIterableConverter(topics).asScala();
+      CollectionConverters.CollectionHasAsScala(topics).asScala();
     final TopicPartition tp1 = new TopicPartition(topic1, 0);
     final TopicPartition tp2 = new TopicPartition(topic1, 1);
     final Collection<TopicPartition> parts = Arrays.asList(tp1, tp2);
     final scala.collection.Iterable<TopicPartition> sParts =
-      JavaConverters.collectionAsScalaIterableConverter(parts).asScala();
+      CollectionConverters.CollectionHasAsScala(parts).asScala();
     final Map<String, Object> kafkaParams = new HashMap<>();
     kafkaParams.put("bootstrap.servers", "not used");
     final scala.collection.Map<String, Object> sKafkaParams =
-      JavaConverters.mapAsScalaMapConverter(kafkaParams).asScala();
+      CollectionConverters.MapHasAsScala(kafkaParams).asScala();
     final Map<TopicPartition, Long> offsets = new HashMap<>();
     offsets.put(tp1, 23L);
     final Map<TopicPartition, Object> dummyOffsets = new HashMap<>();
     dummyOffsets.putAll(offsets);
     final scala.collection.Map<TopicPartition, Object> sOffsets =
-      JavaConverters.mapAsScalaMap(dummyOffsets);
+        CollectionConverters.MapHasAsScala(dummyOffsets).asScala();
 
     final ConsumerStrategy<String, String> sub1 =
       ConsumerStrategies.Subscribe(sTopics, sKafkaParams, sOffsets);

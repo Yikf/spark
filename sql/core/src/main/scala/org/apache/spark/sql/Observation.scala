@@ -19,7 +19,7 @@ package org.apache.spark.sql
 
 import java.util.UUID
 
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters
 
 import org.apache.spark.sql.execution.QueryExecution
 import org.apache.spark.sql.util.QueryExecutionListener
@@ -109,9 +109,9 @@ class Observation(val name: String) {
    */
   @throws[InterruptedException]
   def getAsJava: java.util.Map[String, AnyRef] = {
-    JavaConverters.mapAsJavaMap(
+    CollectionConverters.MapHasAsJava(
       get.map { case (key, value) => (key, value.asInstanceOf[Object])}
-    )
+    ).asJava
   }
 
   private def register(sparkSession: SparkSession): Unit = {

@@ -19,7 +19,7 @@ package org.apache.spark.sql.hive.thriftserver
 
 import java.sql.DatabaseMetaData
 
-import scala.collection.JavaConverters.seqAsJavaListConverter
+import scala.jdk.CollectionConverters.seqAsJavaListConverter
 
 import org.apache.hadoop.hive.ql.security.authorization.plugin.{HiveOperationType, HivePrivilegeObjectUtils}
 import org.apache.hive.service.cli._

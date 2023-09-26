@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.spark.sql.catalyst.util.ResolveDefaultColumns;
 import scala.Option;
-import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -359,7 +359,7 @@ public class VectorizedParquetRecordReader extends SpecificParquetRecordReaderBa
 
   private void initializeInternal() throws IOException, UnsupportedOperationException {
     missingColumns = new HashSet<>();
-    for (ParquetColumn column : JavaConverters.seqAsJavaList(parquetColumn.children())) {
+    for (ParquetColumn column : CollectionConverters.SeqHasAsJava(parquetColumn.children()).asJava()) {
       checkColumn(column);
     }
   }
@@ -369,7 +369,7 @@ public class VectorizedParquetRecordReader extends SpecificParquetRecordReaderBa
    * conforms to the type of the file schema.
    */
   private void checkColumn(ParquetColumn column) throws IOException {
-    String[] path = JavaConverters.seqAsJavaList(column.path()).toArray(new String[0]);
+    String[] path = CollectionConverters.SeqHasAsJava(column.path()).asJava().toArray(new String[0]);
     if (containsPath(fileSchema, path)) {
       if (column.isPrimitive()) {
         ColumnDescriptor desc = column.descriptor().get();
@@ -378,7 +378,7 @@ public class VectorizedParquetRecordReader extends SpecificParquetRecordReaderBa
           throw new UnsupportedOperationException("Schema evolution not supported.");
         }
       } else {
-        for (ParquetColumn childColumn : JavaConverters.seqAsJavaList(column.children())) {
+        for (ParquetColumn childColumn : CollectionConverters.SeqHasAsJava((column.children())).asJava()) {
           checkColumn(childColumn);
         }
       }

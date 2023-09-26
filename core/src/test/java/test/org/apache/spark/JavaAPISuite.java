@@ -42,7 +42,7 @@ import org.apache.spark.TaskContext$;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
-import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -1268,7 +1268,7 @@ public class JavaAPISuite implements Serializable {
 
     Partitioner defaultPartitioner = Partitioner.defaultPartitioner(
       combinedRDD.rdd(),
-      JavaConverters.collectionAsScalaIterableConverter(
+          CollectionConverters.CollectionHasAsScala(
         Collections.<RDD<?>>emptyList()).asScala().toSeq());
     combinedRDD = originalRDD.keyBy(keyFunction)
       .combineByKey(

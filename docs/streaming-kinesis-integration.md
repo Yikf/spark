@@ -142,7 +142,7 @@ A Kinesis stream can be set up at one of the valid Kinesis endpoints with 1 or m
                 import org.apache.spark.streaming.kinesis.KinesisInitialPositions;
                 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
                 import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
-                import scala.collection.JavaConverters;
+                import scala.jdk.CollectionConverters;
 
                 KinesisInputDStream<byte[]> kinesisStream = KinesisInputDStream.builder()
                     .streamingContext(streamingContext)

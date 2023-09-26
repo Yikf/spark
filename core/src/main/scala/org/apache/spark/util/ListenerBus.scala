@@ -19,7 +19,7 @@ package org.apache.spark.util
 
 import java.util.concurrent.CopyOnWriteArrayList
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 

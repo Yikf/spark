@@ -17,7 +17,7 @@
 
 package org.apache.spark.mllib.api.python
 
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters
 
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.clustering.GaussianMixtureModel

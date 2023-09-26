@@ -255,7 +255,7 @@ This file is divided into 3 sections:
   <check customId="javaconversions" level="error" class="org.scalastyle.scalariform.TokenChecker" enabled="true">
     <parameters><parameter name="regex">JavaConversions</parameter></parameters>
     <customMessage>Instead of importing implicits in scala.collection.JavaConversions._, import
-    scala.collection.JavaConverters._ and use .asScala / .asJava methods</customMessage>
+    scala.jdk.CollectionConverters._ and use .asScala / .asJava methods</customMessage>
   </check>
 
   <check customId="commonslang2" level="error" class="org.scalastyle.file.RegexChecker" enabled="true">
